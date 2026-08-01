@@ -1,6 +1,7 @@
 import NavBar from "@/public/components/layout/NavBar";
 import HeaderSection from "@/public/components/layout/HeaderSection";
 import ScrollTemplate from "@/public/components/layout/scroll";
+import HeroSection from "@/public/components/layout/HeroSection";
 import Image from "next/image";
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
         <NavBar />
         <HeaderSection />
         <ScrollTemplate />
+        <HeroSection />
       </div>
     </div>
   );
