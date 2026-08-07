@@ -20,8 +20,23 @@ export default function Form() {
     };
 
 
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  const response = await fetch("/api/contact", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(form),
+});
+
+const data = await response.json();
+
+  console.log(form);
+};
+
 return (
-    <form className="flex flex-col gap-4 w-full max-w-md mx-auto ">
+    <form className="flex flex-col gap-4 w-full max-w-md mx-auto " onSubmit={handleSubmit}>
         <label htmlFor="name" className="text-[#1E1D94] text-[20px]">Naam</label>
         <input 
         name="name"
