@@ -4,6 +4,7 @@ import ScrollTemplate from "@/public/components/layout/scroll";
 import HeroSection from "@/public/components/layout/HeroSection";
 import Services from "@/public/components/layout/Services";
 import OurWork from "@/public/components/layout/OurWork";
+import Offer from "@/public/components/layout/Offer";
 
 
 export default function Home() {
@@ -24,6 +25,7 @@ export default function Home() {
         <HeroSection />
         <Services />
         <OurWork />
+        <Offer />
       </div>
     </div>
   );
