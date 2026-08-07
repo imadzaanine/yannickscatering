@@ -2,7 +2,9 @@ import NavBar from "@/public/components/layout/NavBar";
 import HeaderSection from "@/public/components/layout/HeaderSection";
 import ScrollTemplate from "@/public/components/layout/scroll";
 import HeroSection from "@/public/components/layout/HeroSection";
-import Image from "next/image";
+import Services from "@/public/components/layout/Services";
+import OurWork from "@/public/components/layout/OurWork";
+
 
 export default function Home() {
   return (
@@ -20,6 +22,8 @@ export default function Home() {
         <HeaderSection />
         <ScrollTemplate />
         <HeroSection />
+        <Services />
+        <OurWork />
       </div>
     </div>
   );
