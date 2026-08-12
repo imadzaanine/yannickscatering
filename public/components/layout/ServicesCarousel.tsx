@@ -27,67 +27,96 @@ const ServicesCarousel: React.FC = () => {
   const blockRefs = useRef<(HTMLDivElement | null)[]>([])
   const baseImgRef = useRef<HTMLImageElement>(null)
   const nextImgRef = useRef<HTMLImageElement>(null)
+  const rafRef = useRef<number | null>(null)
+  const blockOffsets = useRef<{ top: number; height: number }[]>([])
 
   useEffect(() => {
-  let ticking = false
-
-  const updateSlide = () => {
-    const baseImg = baseImgRef.current
-    const nextImg = nextImgRef.current
-    if (!baseImg || !nextImg) return
-
-    const transitionDistance = window.innerHeight * 0.5
-    const scrollY = window.scrollY
-
-    let currentIndex = services.length - 1
-    let progress = 1
-
-    for (let i = 0; i < services.length - 1; i++) {
-      const block = blockRefs.current[i]
-      if (!block) continue
-
-      const blockTop = block.offsetTop
-      const blockHeight = block.offsetHeight
-      const blockEnd = blockTop + blockHeight
-
-      // transition happens only during the LAST transitionDistance px of this block
-      const start = blockEnd - transitionDistance
-      const end = blockEnd
-
-      const raw = (scrollY - start) / (end - start)
-      const clamped = Math.max(0, Math.min(1, raw))
-
-      if (clamped < 1) {
-        currentIndex = i
-        progress = clamped
-        break
-      }
+    // Recalculate block positions — called on mount, after images load, and on resize
+    const measureBlocks = () => {
+      blockOffsets.current = blockRefs.current.map((block) => {
+        if (!block) return { top: 0, height: 0 }
+        return { top: block.offsetTop, height: block.offsetHeight }
+      })
     }
 
-    const nextIndex = Math.min(currentIndex + 1, services.length - 1)
+    const updateSlide = () => {
+      const baseImg = baseImgRef.current
+      const nextImg = nextImgRef.current
+      if (!baseImg || !nextImg || blockOffsets.current.length === 0) {
+        rafRef.current = requestAnimationFrame(updateSlide)
+        return
+      }
 
-    baseImg.src = services[currentIndex].image
-    nextImg.src = services[nextIndex].image
+      const transitionDistance = window.innerHeight * 0.5
+      const scrollY = window.scrollY
 
-    const translateY = (1 - progress) * 100
-    nextImg.style.transition = 'none'
-    nextImg.style.transform = `translateY(${translateY}%)`
+      let currentIndex = services.length - 1
+      let progress = 1
 
-    setActiveIndex(currentIndex)
-    ticking = false
-  }
+      for (let i = 0; i < services.length - 1; i++) {
+        const offset = blockOffsets.current[i]
+        if (!offset) continue
 
-  const handleScroll = () => {
-    if (ticking) return
-    ticking = true
-    requestAnimationFrame(updateSlide)
-  }
+        const blockEnd = offset.top + offset.height
+        const start = blockEnd - transitionDistance
+        const end = blockEnd
 
-  window.addEventListener('scroll', handleScroll, { passive: true })
-  updateSlide()
+        const raw = (scrollY - start) / (end - start)
+        const clamped = Math.max(0, Math.min(1, raw))
 
-  return () => window.removeEventListener('scroll', handleScroll)
-}, [])
+        if (clamped < 1) {
+          currentIndex = i
+          progress = clamped
+          break
+        }
+      }
+
+      const nextIndex = Math.min(currentIndex + 1, services.length - 1)
+
+      if (baseImg.src.indexOf(services[currentIndex].image) === -1) {
+        baseImg.src = services[currentIndex].image
+      }
+      if (nextImg.src.indexOf(services[nextIndex].image) === -1) {
+        nextImg.src = services[nextIndex].image
+      }
+
+      const translateY = (1 - progress) * 100
+      nextImg.style.transform = `translateY(${translateY}%)`
+
+      setActiveIndex((prev) => (prev !== currentIndex ? currentIndex : prev))
+
+      rafRef.current = requestAnimationFrame(updateSlide)
+    }
+
+    // Initial measure — do it after paint so offsetTop/offsetHeight are accurate
+    measureBlocks()
+    rafRef.current = requestAnimationFrame(updateSlide)
+
+    // Re-measure once all images have actually loaded (fixes "doesn't work first time")
+    const imgs = Array.from(document.querySelectorAll('img'))
+    let pending = imgs.filter((img) => !img.complete).length
+    const onImgLoad = () => {
+      pending -= 1
+      if (pending <= 0) measureBlocks()
+    }
+    imgs.forEach((img) => {
+      if (!img.complete) img.addEventListener('load', onImgLoad)
+    })
+
+    // Re-measure on resize (layout can shift block heights)
+    const handleResize = () => measureBlocks()
+    window.addEventListener('resize', handleResize)
+
+    // Safety re-measure shortly after mount in case fonts/images shift layout late
+    const safetyTimeout = setTimeout(measureBlocks, 300)
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      window.removeEventListener('resize', handleResize)
+      imgs.forEach((img) => img.removeEventListener('load', onImgLoad))
+      clearTimeout(safetyTimeout)
+    }
+  }, [])
 
   return (
     <section className="flex gap-8 my-8 mx-15">

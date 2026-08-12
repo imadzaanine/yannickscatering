@@ -16,17 +16,17 @@ const NavBar: React.FC = () => {
 
       <div className='absolute left-1/2 transform -translate-x-1/2'>
         <ul className='flex space-x-24'>
-          <li className='text-black cursor-pointer'>
+          <li className='group text-black cursor-pointer'>
             <div>Home</div>
-            <div className='w-10 h-0.75 bg-gray-400 mx-auto'></div>
+            <div className='w-10 h-0.75 bg-gray-400 mx-auto transition-colors group-hover:bg-[#1E1D94]'></div>
           </li>
-          <li className='text-black cursor-pointer'>
+          <li className='group text-black cursor-pointer'>
             <div>Menu</div>
-            <div className='w-10 h-0.75 bg-gray-400 mx-auto'></div>
+            <div className='w-10 h-0.75 bg-gray-400 mx-auto transition-colors group-hover:bg-[#1E1D94]'></div>
           </li>
-          <li className='text-black cursor-pointer'>
+          <li className='group text-black cursor-pointer'>
             <div>Contact</div>
-            <div className='w-10 h-0.75 bg-gray-400 mx-auto'></div>
+            <div className='w-10 h-0.75 bg-gray-400 mx-auto transition-colors group-hover:bg-[#1E1D94]'></div>
           </li>
         </ul>
       </div>

@@ -5,6 +5,7 @@ import HeroSection from "@/public/components/layout/HeroSection";
 import Services from "@/public/components/layout/Services";
 import OurWork from "@/public/components/layout/OurWork";
 import Offer from "@/public/components/layout/Offer";
+import Footer from "@/public/components/layout/Footer";
 
 
 export default function Home() {
@@ -26,6 +27,7 @@ export default function Home() {
         <Services />
         <OurWork />
         <Offer />
+        <Footer />
       </div>
     </div>
   );

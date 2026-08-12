@@ -29,14 +29,14 @@ const WorkCarousel: React.FC = () => {
         {images.map((src, index) => (
           <div
             key={index}
-            className="w-64 px-2 flex-shrink-0"
+            className="w-96 px-3 flex-shrink-0"
           >
             <Image
               src={src}
               alt={`Work ${index + 1}`}
-              width={256}
-              height={256}
-              className="w-full h-64 object-cover rounded-xl"
+              width={384}
+              height={384}
+              className="w-full h-96 object-cover rounded-xl"
               priority
             />
           </div>
