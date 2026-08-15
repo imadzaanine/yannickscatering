@@ -13,7 +13,7 @@ const HeaderSection: React.FC = () => {
   const arrowOpacity = useTransform(scrollY, [0, 100], [1, 0]);
 
   return (
-    <div className='flex flex-col items-center min-h-screen justify-between gap-4 pb-10'>
+    <div className='flex flex-col items-center min-h-screen justify-between gap-4 pb-10' id='Home'>
       <motion.div style={{ opacity: logoOpacity, scale: logoScale, y: logoY }} className='sticky top-0'>
         <Logo width={250} height={40} />
       </motion.div>

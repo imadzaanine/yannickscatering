@@ -42,7 +42,7 @@ return (
         name="name"
         value={form.name}
         onChange={handleChange}
-        className="border border-gray-300  p-2"
+        className="border border-gray-300  p-2 text-black"
         />
         
         <label htmlFor="email" className="text-[#1E1D94] text-[20px]">E-mail</label>
@@ -50,7 +50,7 @@ return (
         name="email"
         value={form.email}
         onChange={handleChange}
-        className="border border-gray-300  p-2"
+        className="border border-gray-300  p-2 text-black"
         />
 
         <label htmlFor="telephone" className="text-[#1E1D94] text-[20px]">Telefoonnummer</label>
@@ -58,7 +58,7 @@ return (
         name="telephone"
         value={form.telephone}
         onChange={handleChange}
-        className="border border-gray-300  p-2"
+        className="border border-gray-300  p-2 text-black"
         />
 
 <label htmlFor="message" className="text-[#1E1D94] text-[20px]">Bericht</label>
@@ -66,7 +66,7 @@ return (
         name="message"
         value={form.message}
         onChange={handleChange}
-        className="border border-gray-300  p-2"
+        className="border border-gray-300  p-2 text-black"
         />
 
         <button type="submit" className="bg-[#1E1D94] text-white py-2 px-4  hover:bg-[#0f0e6b] hover:cursor-pointer ">
