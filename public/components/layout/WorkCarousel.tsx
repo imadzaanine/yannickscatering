@@ -29,16 +29,18 @@ const WorkCarousel: React.FC = () => {
         {images.map((src, index) => (
           <div
             key={index}
-            className="w-96 px-3 flex-shrink-0"
+            className="w-96 h-96 px-3 flex-shrink-0"
           >
-            <Image
-              src={src}
-              alt={`Work ${index + 1}`}
-              width={384}
-              height={384}
-              className="w-full h-96 object-cover rounded-xl"
-              priority
-            />
+            <div className="relative w-full h-full rounded-xl overflow-hidden">
+              <Image
+                src={src}
+                alt={`Work ${index + 1}`}
+                fill
+                className="object-cover"
+                sizes="384px"
+                priority
+              />
+            </div>
           </div>
         ))}
       </Marquee>

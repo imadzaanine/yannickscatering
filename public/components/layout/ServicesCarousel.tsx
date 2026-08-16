@@ -23,7 +23,6 @@ const services = [
 ]
 
 const ServicesCarousel: React.FC = () => {
-  const [activeIndex, setActiveIndex] = useState(0)
   const blockRefs = useRef<(HTMLDivElement | null)[]>([])
   const baseImgRef = useRef<HTMLImageElement>(null)
   const nextImgRef = useRef<HTMLImageElement>(null)
@@ -31,7 +30,12 @@ const ServicesCarousel: React.FC = () => {
   const blockOffsets = useRef<{ top: number; height: number }[]>([])
 
   useEffect(() => {
-    // Recalculate block positions — called on mount, after images load, and on resize
+    // Preload every carousel image so later src swaps are instant (no decode stall mid-scroll)
+    services.forEach((s) => {
+      const img = new window.Image()
+      img.src = s.image
+    })
+
     const measureBlocks = () => {
       blockOffsets.current = blockRefs.current.map((block) => {
         if (!block) return { top: 0, height: 0 }
@@ -81,18 +85,14 @@ const ServicesCarousel: React.FC = () => {
       }
 
       const translateY = (1 - progress) * 100
-      nextImg.style.transform = `translateY(${translateY}%)`
-
-      setActiveIndex((prev) => (prev !== currentIndex ? currentIndex : prev))
+      nextImg.style.transform = `translate3d(0, ${translateY}%, 0)`
 
       rafRef.current = requestAnimationFrame(updateSlide)
     }
 
-    // Initial measure — do it after paint so offsetTop/offsetHeight are accurate
     measureBlocks()
     rafRef.current = requestAnimationFrame(updateSlide)
 
-    // Re-measure once all images have actually loaded (fixes "doesn't work first time")
     const imgs = Array.from(document.querySelectorAll('img'))
     let pending = imgs.filter((img) => !img.complete).length
     const onImgLoad = () => {
@@ -103,11 +103,9 @@ const ServicesCarousel: React.FC = () => {
       if (!img.complete) img.addEventListener('load', onImgLoad)
     })
 
-    // Re-measure on resize (layout can shift block heights)
     const handleResize = () => measureBlocks()
     window.addEventListener('resize', handleResize)
 
-    // Safety re-measure shortly after mount in case fonts/images shift layout late
     const safetyTimeout = setTimeout(measureBlocks, 300)
 
     return () => {
@@ -135,7 +133,7 @@ const ServicesCarousel: React.FC = () => {
               src={services[1].image}
               alt=""
               className="absolute inset-0 w-full h-full object-cover"
-              style={{ transform: 'translateY(100%)' }}
+              style={{ transform: 'translate3d(0, 100%, 0)', willChange: 'transform' }}
             />
           </div>
         </div>

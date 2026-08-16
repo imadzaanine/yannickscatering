@@ -23,7 +23,7 @@ const HeaderSection: React.FC = () => {
         animate={{ y: [0, -12, 0] }}
         transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
       >
-        <Image src="/Arrow 1.svg" alt='Arrow' width={25} height={0} />
+        <Image src="/Arrow 1.svg" alt='Arrow' width={25} height={25} />
       </motion.div>
     </div>
   );
