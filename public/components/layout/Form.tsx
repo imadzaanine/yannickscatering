@@ -10,6 +10,9 @@ export default function Form() {
     message: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<"success" | "error" | null>(null);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -17,6 +20,10 @@ export default function Form() {
       ...prev,
       [e.target.name]: e.target.value,
     }));
+
+    if (status) {
+      setStatus(null);
+    }
   };
 
   const handleSubmit = async (
@@ -24,17 +31,38 @@ export default function Form() {
   ) => {
     e.preventDefault();
 
-    const response = await fetch("/api/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    setLoading(true);
+    setStatus(null);
 
-    const data = await response.json();
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    console.log(data);
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+
+      await response.json();
+
+      setStatus("success");
+
+      setForm({
+        name: "",
+        email: "",
+        telephone: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error(error);
+      setStatus("error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,13 +77,15 @@ export default function Form() {
         >
           Naam
         </label>
+
         <input
           id="name"
           type="text"
           name="name"
+          required
           value={form.name}
           onChange={handleChange}
-          className="w-full border border-gray-300 rounded-md p-3 text-black focus:outline-none focus:ring-2 focus:ring-[#1E1D94]"
+          className="w-full rounded-md border border-gray-300 p-3 text-black transition focus:border-[#1E1D94] focus:outline-none focus:ring-2 focus:ring-[#1E1D94]/20"
         />
       </div>
 
@@ -66,13 +96,15 @@ export default function Form() {
         >
           E-mail
         </label>
+
         <input
           id="email"
           type="email"
           name="email"
+          required
           value={form.email}
           onChange={handleChange}
-          className="w-full border border-gray-300 rounded-md p-3 text-black focus:outline-none focus:ring-2 focus:ring-[#1E1D94]"
+          className="w-full rounded-md border border-gray-300 p-3 text-black transition focus:border-[#1E1D94] focus:outline-none focus:ring-2 focus:ring-[#1E1D94]/20"
         />
       </div>
 
@@ -83,13 +115,15 @@ export default function Form() {
         >
           Telefoonnummer
         </label>
+
         <input
           id="telephone"
           type="tel"
           name="telephone"
+          required
           value={form.telephone}
           onChange={handleChange}
-          className="w-full border border-gray-300 rounded-md p-3 text-black focus:outline-none focus:ring-2 focus:ring-[#1E1D94]"
+          className="w-full rounded-md border border-gray-300 p-3 text-black transition focus:border-[#1E1D94] focus:outline-none focus:ring-2 focus:ring-[#1E1D94]/20"
         />
       </div>
 
@@ -100,22 +134,37 @@ export default function Form() {
         >
           Bericht
         </label>
+
         <textarea
           id="message"
           name="message"
           rows={5}
+          required
           value={form.message}
           onChange={handleChange}
-          className="w-full border border-gray-300 rounded-md p-3 text-black resize-none focus:outline-none focus:ring-2 focus:ring-[#1E1D94]"
+          className="w-full resize-none rounded-md border border-gray-300 p-3 text-black transition focus:border-[#1E1D94] focus:outline-none focus:ring-2 focus:ring-[#1E1D94]/20"
         />
       </div>
 
       <button
         type="submit"
-        className="w-full sm:w-auto bg-[#1E1D94] text-white py-3 px-8 rounded-md hover:bg-[#0f0e6b] transition-colors cursor-pointer"
+        disabled={loading}
+        className="w-full sm:w-auto rounded-md bg-[#1E1D94] px-8 py-3 text-white transition-colors hover:bg-[#17167a] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Verstuur
+        {loading ? "Bezig met verzenden..." : "Verstuur bericht"}
       </button>
+
+      {status === "success" && (
+        <p className="text-sm text-black">
+          Bedankt voor uw bericht. We nemen zo spoedig mogelijk contact met u op.
+        </p>
+      )}
+
+      {status === "error" && (
+        <p className="text-sm text-red-600">
+          Er is iets misgegaan bij het verzenden van uw bericht. Probeer het later opnieuw.
+        </p>
+      )}
     </form>
   );
 }
