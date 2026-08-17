@@ -3,13 +3,19 @@ import Form from "./Form";
 
 const Offer: React.FC = () => {
   return (
-    <section className="flex flex-col items-center justify-center gap-4 bg-white  min-h-screen " id ='Offer'>
-        <h1 className="text-[#1E1D94] text-[48px]">Vraag een vrijblijfende offerte aan</h1>
-        <div className=" my-8 w-full">
-        
-        <Form />
-        </div>
+    <section
+      id="Offer"
+      className="bg-white py-16 px-4 sm:px-6 lg:px-8"
+    >
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-[#1E1D94] text-3xl sm:text-4xl lg:text-[48px] text-center">
+  Vraag een vrijblijvende offerte aan
+</h1>
 
+        <div className="mt-10">
+          <Form />
+        </div>
+      </div>
     </section>
   );
 };
