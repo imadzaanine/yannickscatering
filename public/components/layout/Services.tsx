@@ -9,8 +9,8 @@ const Services: React.FC = () => {
         background: "linear-gradient(to bottom, #ffffff, #f0f0f5)",
       }}
     >
-      <h1 className="text-[#1E1D94] text-[48px] mt-16">Onze Diensten</h1>
-      <div className="mt-2 mb-8 mx-40">
+      <h1 className="text-[#1E1D94] text-[32px] sm:text-[40px] md:text-[48px] mt-10 md:mt-16 text-center px-4">Onze Diensten</h1>
+      <div className="mt-2 mb-8 w-full">
         <ServicesCarousel />
       </div>
     </section>

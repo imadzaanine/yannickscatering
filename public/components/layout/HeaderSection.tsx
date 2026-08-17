@@ -3,9 +3,11 @@ import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Logo from '../ui/Logo';
 import Image from 'next/image';
+import { useMenu } from '../contexts/MenuContext';
 
 const HeaderSection: React.FC = () => {
   const { scrollY } = useScroll();
+  const { menuOpen } = useMenu();
   const logoOpacity = useTransform(scrollY, [0, 200], [1, 0]);
   const logoScale = useTransform(scrollY, [0, 200], [1, 0.6]);
   const logoY = useTransform(scrollY, [0, 200], [0, -40]);
@@ -15,7 +17,12 @@ const HeaderSection: React.FC = () => {
   return (
     <div className='flex flex-col items-center min-h-screen justify-between gap-4 pb-10' id='Home'>
       <motion.div style={{ opacity: logoOpacity, scale: logoScale, y: logoY }} className='sticky top-0'>
-        <Logo width={250} height={40} />
+        <motion.div
+          animate={{ opacity: menuOpen ? 0 : 1 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          <Logo width={250} height={40} />
+        </motion.div>
       </motion.div>
 
       <motion.div

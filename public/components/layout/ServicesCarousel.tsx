@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 
 const services = [
   {
@@ -27,50 +27,47 @@ const ServicesCarousel: React.FC = () => {
   const baseImgRef = useRef<HTMLImageElement>(null)
   const nextImgRef = useRef<HTMLImageElement>(null)
   const rafRef = useRef<number | null>(null)
-  const blockOffsets = useRef<{ top: number; height: number }[]>([])
 
   useEffect(() => {
-    // Preload every carousel image so later src swaps are instant (no decode stall mid-scroll)
     services.forEach((s) => {
       const img = new window.Image()
       img.src = s.image
     })
 
-    const measureBlocks = () => {
-      blockOffsets.current = blockRefs.current.map((block) => {
-        if (!block) return { top: 0, height: 0 }
-        return { top: block.offsetTop, height: block.offsetHeight }
-      })
-    }
-
     const updateSlide = () => {
       const baseImg = baseImgRef.current
       const nextImg = nextImgRef.current
-      if (!baseImg || !nextImg || blockOffsets.current.length === 0) {
+      if (!baseImg || !nextImg) {
         rafRef.current = requestAnimationFrame(updateSlide)
         return
       }
 
-      const transitionDistance = window.innerHeight * 0.5
-      const scrollY = window.scrollY
+      // Fixed reference line at the vertical middle of the viewport — whichever
+      // block currently spans this line is the "active" one. Computed fresh
+      // every frame via getBoundingClientRect(), so there's nothing cached
+      // that can go stale from mobile address-bar resizing, font swaps, etc.
+      const triggerY = window.innerHeight * 0.5
 
-      let currentIndex = services.length - 1
-      let progress = 1
+      let currentIndex = 0
+      let progress = 0
 
-      for (let i = 0; i < services.length - 1; i++) {
-        const offset = blockOffsets.current[i]
-        if (!offset) continue
+      for (let i = 0; i < services.length; i++) {
+        const el = blockRefs.current[i]
+        if (!el) continue
 
-        const blockEnd = offset.top + offset.height
-        const start = blockEnd - transitionDistance
-        const end = blockEnd
+        const rect = el.getBoundingClientRect()
+        const isLast = i === services.length - 1
 
-        const raw = (scrollY - start) / (end - start)
-        const clamped = Math.max(0, Math.min(1, raw))
-
-        if (clamped < 1) {
+        if (rect.bottom > triggerY || isLast) {
           currentIndex = i
-          progress = clamped
+          if (!isLast) {
+            const fadeZone = rect.height * 0.4
+            const fadeStart = rect.bottom - fadeZone
+            const raw = (triggerY - fadeStart) / fadeZone
+            progress = Math.max(0, Math.min(1, raw))
+          } else {
+            progress = 0
+          }
           break
         }
       }
@@ -90,38 +87,19 @@ const ServicesCarousel: React.FC = () => {
       rafRef.current = requestAnimationFrame(updateSlide)
     }
 
-    measureBlocks()
     rafRef.current = requestAnimationFrame(updateSlide)
-
-    const imgs = Array.from(document.querySelectorAll('img'))
-    let pending = imgs.filter((img) => !img.complete).length
-    const onImgLoad = () => {
-      pending -= 1
-      if (pending <= 0) measureBlocks()
-    }
-    imgs.forEach((img) => {
-      if (!img.complete) img.addEventListener('load', onImgLoad)
-    })
-
-    const handleResize = () => measureBlocks()
-    window.addEventListener('resize', handleResize)
-
-    const safetyTimeout = setTimeout(measureBlocks, 300)
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
-      window.removeEventListener('resize', handleResize)
-      imgs.forEach((img) => img.removeEventListener('load', onImgLoad))
-      clearTimeout(safetyTimeout)
     }
   }, [])
 
   return (
-    <section className="flex gap-8 my-8 mx-15">
+    <section className="my-8 mx-4 sm:mx-8 md:mx-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 md:gap-8">
 
-      <div className="w-1/2">
-        <div className="sticky top-0 h-screen flex items-center justify-center">
-          <div className="relative aspect-square w-full max-w-md overflow-hidden">
+        <div className="sticky top-20 h-[38vh] md:h-screen w-full md:flex md:items-center md:justify-center overflow-hidden mb-4 md:mb-0 rounded-xl md:rounded-none md:[grid-column:1] md:[grid-row:1/-1]">
+          <div className="relative w-full h-full md:aspect-square md:h-auto md:w-full md:max-w-md md:mx-auto overflow-hidden">
             <img
               ref={baseImgRef}
               src={services[0].image}
@@ -137,23 +115,21 @@ const ServicesCarousel: React.FC = () => {
             />
           </div>
         </div>
-      </div>
 
-      <div className="w-1/2">
         {services.map((service, i) => (
           <div
             key={i}
             ref={(el) => { blockRefs.current[i] = el }}
             data-index={i}
-            className="min-h-[80vh] flex flex-col items-start justify-center gap-4 p-8"
+            className="md:[grid-column:2] min-h-[45vh] md:min-h-[80vh] flex flex-col items-start justify-center gap-3 md:gap-4 p-4 md:p-8"
           >
-            <h1 className="text-[#1E1D94] text-[32px]">{service.title}</h1>
+            <h1 className="text-[#1E1D94] text-[22px] md:text-[32px]">{service.title}</h1>
             {service.text.map((p, j) => (
               <p key={j} className="text-black text-[14px]">{p}</p>
             ))}
           </div>
         ))}
-        <div className="h-[60vh]" />
+        <div className="md:[grid-column:2] h-[20vh] md:h-[60vh]" />
       </div>
     </section>
   )
