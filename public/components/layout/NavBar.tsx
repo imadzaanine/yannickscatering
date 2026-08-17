@@ -1,6 +1,14 @@
 'use client';
+
 import React, { useState } from 'react';
-import { motion, useScroll, useTransform, useMotionValueEvent, useAnimationControls, AnimatePresence } from 'framer-motion';
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionValueEvent,
+  useAnimationControls,
+  AnimatePresence,
+} from 'framer-motion';
 import Logo from '../ui/Logo';
 import { useMenu } from '../contexts/MenuContext';
 
@@ -35,7 +43,12 @@ const NavBar: React.FC = () => {
     });
   };
 
-  const navBg = menuOpen ? 'rgba(255,255,255,1)' : scrolled ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0)';
+  const navBg = menuOpen
+    ? 'rgba(255,255,255,1)'
+    : scrolled
+    ? 'rgba(255,255,255,0.6)'
+    : 'rgba(255,255,255,0)';
+
   const showBlur = !menuOpen && scrolled;
 
   return (
@@ -54,17 +67,23 @@ const NavBar: React.FC = () => {
         <Logo width={100} height={16} />
       </motion.div>
 
-      <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2">
+      {/* Desktop Navigation */}
+      <div className="hidden md:block absolute left-1/2 -translate-x-1/2">
         <ul className="flex space-x-24">
           {links.map((link) => (
-            <li key={link.id} className="group text-black cursor-pointer" onClick={() => handleNavClick(link.id)}>
+            <li
+              key={link.id}
+              className="group text-black cursor-pointer"
+              onClick={() => handleNavClick(link.id)}
+            >
               <div>{link.label}</div>
-              <div className="w-10 h-0.75 bg-gray-400 mx-auto transition-colors group-hover:bg-[#1E1D94]"></div>
+              <div className="w-10 h-0.75 bg-gray-400 mx-auto transition-colors group-hover:bg-[#1E1D94]" />
             </li>
           ))}
         </ul>
       </div>
 
+      {/* Hamburger */}
       <motion.button
         animate={hamburgerControls}
         className="md:hidden flex flex-col justify-center items-center gap-1.5 w-8 h-8 z-50"
@@ -72,11 +91,21 @@ const NavBar: React.FC = () => {
         aria-label="Toggle menu"
         aria-expanded={menuOpen}
       >
-        <motion.span animate={menuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }} className="w-6 h-0.5 bg-black block origin-center" />
-        <motion.span animate={menuOpen ? { opacity: 0 } : { opacity: 1 }} className="w-6 h-0.5 bg-black block" />
-        <motion.span animate={menuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }} className="w-6 h-0.5 bg-black block origin-center" />
+        <motion.span
+          animate={menuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
+          className="w-6 h-0.5 bg-black block origin-center"
+        />
+        <motion.span
+          animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
+          className="w-6 h-0.5 bg-black block"
+        />
+        <motion.span
+          animate={menuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
+          className="w-6 h-0.5 bg-black block origin-center"
+        />
       </motion.button>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -89,9 +118,12 @@ const NavBar: React.FC = () => {
           >
             <ul className="flex flex-col gap-6">
               {links.map((link) => (
-                <li key={link.id} className="group text-black cursor-pointer text-lg" onClick={() => handleNavClick(link.id)}>
+                <li
+                  key={link.id}
+                  className="text-black cursor-pointer text-lg"
+                  onClick={() => handleNavClick(link.id)}
+                >
                   <div>{link.label}</div>
-                  <div className="w-10 h-0.75 bg-gray-400 transition-colors group-hover:bg-[#1E1D94]"></div>
                 </li>
               ))}
             </ul>
