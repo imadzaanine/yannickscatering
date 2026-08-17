@@ -29,7 +29,7 @@ const WorkCarousel: React.FC = () => {
         {images.map((src, index) => (
           <div
             key={index}
-            className="w-96 h-96 px-3 flex-shrink-0"
+            className="w-48 h-48 sm:w-64 sm:h-64 md:w-96 md:h-96 px-2 sm:px-3 flex-shrink-0"
           >
             <div className="relative w-full h-full rounded-xl overflow-hidden">
               <Image
@@ -37,8 +37,7 @@ const WorkCarousel: React.FC = () => {
                 alt={`Work ${index + 1}`}
                 fill
                 className="object-cover"
-                sizes="384px"
-                priority
+                sizes="(max-width: 640px) 192px, (max-width: 768px) 256px, 384px"
               />
             </div>
           </div>
